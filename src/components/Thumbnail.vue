@@ -1,16 +1,23 @@
 <template>
-  <b-card class="mb-2">
-    <img v-if="isImage" class="card-img-top" :src="src" :alt="image.name">
-    <video ref="video"
-           v-on:mouseover="startVideo" v-on:mouseout="stopVideo">
-      <source :src="src" :type="image.mimeType">
-      Your browser does not support the video tag.
-    </video>
-    <button v-if="isVideo" v-on:click="toggleVideo">{{playButtonLabel}}</button>
-    <div class="card-body">
-      <h5 class="card-title" v-text="image.name"></h5>
+  <div class="card mb-5">
+    <div class="card-img-top thumbnail-img">
+      <!-- Image -->
+      <img v-if="isImage" :src="src" :alt="image.name">
+      <!-- Videos -->
+      <video class="thumbnail-img" v-if="isVideo" ref="video"
+             v-on:mouseover="startVideo" v-on:mouseout="stopVideo">
+        <source :src="src" :type="image.mimeType">
+        Your browser does not support the video tag.
+      </video>
+      <b-button class="video-toggle" v-if="isVideo" v-on:click="toggleVideo">{{playButtonLabel}}</b-button>
     </div>
-  </b-card>
+    <!-- Title and Metadata -->
+    <div class="card-body">
+      <h5 class="card-title">
+        <router-link :to="detailsLink">{{image.name}}</router-link>
+      </h5>
+    </div>
+  </div>
 </template>
 <script>
 export default {
@@ -32,22 +39,24 @@ export default {
   },
   computed: {
     src: function () {
-      return '/backend/scaled/300x300/' + this.image.path
+      return '/backend/scaled/300x300/' + this.image.file
     },
     isImage: function () {
-      return this.image.type === 'file' && this.image.mimeType.match(/^image\/.*/)
+      return this.image.mimeType.match(/^image\/.*/)
     },
     isVideo: function () {
-      return this.image.type === 'file' && this.image.mimeType.match(/^video\/.*/)
+      return this.image.mimeType.match(/^video\/.*/)
     },
-    isDirectory: function () {
-      return this.image.type === 'directory'
+    detailsLink: function () {
+      return this.isDirectory
+        ? `/browse/${encodeURIComponent(this.image.path)}`
+        : 'TODO'
     },
     playButtonLabel: function () {
       if (this.playing) {
-        return '||'
+        return 'Pause Preview'
       } else {
-        return '>'
+        return 'Run Preview'
       }
     }
   },
@@ -68,5 +77,23 @@ export default {
 <style scoped>
   video {
     width: 100%;
+  }
+
+  .thumbnail-img {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .thumbnail-img video, .thumbnail-img img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .video-toggle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 </style>

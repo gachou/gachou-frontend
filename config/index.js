@@ -13,10 +13,7 @@ module.exports = {
     proxyTable: {
       '/backend': {
         target: 'http://localhost:3000/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/backend': ''
-        }
+        changeOrigin: true
       }
     },
 
